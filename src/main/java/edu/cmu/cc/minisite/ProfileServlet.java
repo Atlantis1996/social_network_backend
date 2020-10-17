@@ -140,6 +140,10 @@ public class ProfileServlet extends HttpServlet {
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
         String profile_image_url = null;
+        
+        if (conn == null) {
+            return;
+        }
 
         try {
             PreparedStatement pst = conn.prepareStatement(query);
@@ -147,7 +151,6 @@ public class ProfileServlet extends HttpServlet {
             pst.setString(2, pwd);
             System.out.println(pst.toString());
             ResultSet resultSet = pst.executeQuery();
-            System.out.println(resultSet.getString(1));
             profile_image_url = resultSet.getString("profile_photo_url");
             System.out.println(profile_image_url);
         } catch (Exception e) {
