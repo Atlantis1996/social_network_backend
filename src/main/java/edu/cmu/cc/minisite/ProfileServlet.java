@@ -108,8 +108,9 @@ public class ProfileServlet extends HttpServlet {
             throws IOException{
         String name = request.getParameter("id");
         String pwd = request.getParameter("pwd");
+        JsonObject result = new JsonObject();
         try {
-            JsonObject result = validateLoginAndReturnResult(name, pwd);
+            result = validateLoginAndReturnResult(name, pwd);
         } catch (Exception e) {
             //Do nothing
         }
