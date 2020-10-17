@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 /**
  * Task 1:
  * This query simulates the login process of a user
@@ -123,7 +124,7 @@ public class ProfileServlet extends HttpServlet {
      * @param pwd   The password supplied via the HttpServletRequest
      * @return A JsonObject with the servlet's response
      */
-    JsonObject validateLoginAndReturnResult(String name, String pwd) {
+    JsonObject validateLoginAndReturnResult(String name, String pwd) throws SQLException{
         JsonObject result = new JsonObject();
         String query = "SELECT profile_photo_url FROM users WHERE username = ? AND pwd = ?";
 
@@ -134,12 +135,16 @@ public class ProfileServlet extends HttpServlet {
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
 
-        PreparedStatement pst = conn.prepareStatement(query);
-        pst.setString(1, name);
-        pst.setString(2, pwd);
-
-        ResultSet resultSet = pst.executeQuery();
-        String profile_image_url = resultSet.getString("profile_photo_url");
+        try {
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setString(1, name);
+            pst.setString(2, pwd);
+    
+            ResultSet resultSet = pst.executeQuery();
+            String profile_image_url = resultSet.getString("profile_photo_url");
+        } catch (SQLException e) {
+            //Do nothing
+        }
 
         if(profile_image_url == null) {
             name = "Unauthorized";
