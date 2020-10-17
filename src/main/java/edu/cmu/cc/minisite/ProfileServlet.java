@@ -108,7 +108,6 @@ public class ProfileServlet extends HttpServlet {
             throws IOException{
         String name = request.getParameter("id");
         String pwd = request.getParameter("pwd");
-        System.out.println(name);
         JsonObject result = new JsonObject();
         try {
             result = validateLoginAndReturnResult(name, pwd);
@@ -144,10 +143,9 @@ public class ProfileServlet extends HttpServlet {
 
         try {
             PreparedStatement pst = conn.prepareStatement(query);
-            System.out.println(pst.toString());
             pst.setString(1, name);
             pst.setString(2, pwd);
-    
+            System.out.println(pst.toString());
             ResultSet resultSet = pst.executeQuery();
             profile_image_url = resultSet.getString("profile_photo_url");
             
