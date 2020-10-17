@@ -140,9 +140,9 @@ public class ProfileServlet extends HttpServlet {
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
         String profile_image_url = null;
-        
+
         if (conn == null) {
-            return;
+            return result;
         }
 
         try {
