@@ -155,6 +155,7 @@ public class ProfileServlet extends HttpServlet {
             System.out.println(profile_image_url);
         } catch (Exception e) {
             //Do nothing
+            e.printStackTrace();
         }
 
         if(profile_image_url == null) {
