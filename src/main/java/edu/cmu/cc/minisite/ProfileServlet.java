@@ -138,7 +138,7 @@ public class ProfileServlet extends HttpServlet {
         pst.setString(1, name);
         pst.setString(2, pwd);
 
-        ResultSet resultSet = pst.executeUpdate();
+        ResultSet resultSet = pst.executeQuery();
         String profile_image_url = resultSet.getString("profile_photo_url");
 
         if(profile_image_url == null) {
