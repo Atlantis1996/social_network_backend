@@ -104,11 +104,15 @@ public class ProfileServlet extends HttpServlet {
      *                 uses to return the headers to the client
      * @throws IOException      if an input or output error occurs
      */
-    protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException {
+    protected void doGet (final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException, SQLException{
         String name = request.getParameter("id");
         String pwd = request.getParameter("pwd");
-        JsonObject result = validateLoginAndReturnResult(name, pwd);
+        try {
+            JsonObject result = validateLoginAndReturnResult(name, pwd);
+        } catch (SQLException e) {
+            //Do nothing
+        }
         response.setContentType("text/html; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
@@ -134,8 +138,8 @@ public class ProfileServlet extends HttpServlet {
         // You may also look at them for expected behavior.
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
-        String profile_image_url;
-        
+        String profile_image_url = null;
+
         try {
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, name);
