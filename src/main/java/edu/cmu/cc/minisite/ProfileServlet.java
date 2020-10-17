@@ -148,7 +148,7 @@ public class ProfileServlet extends HttpServlet {
             System.out.println(pst.toString());
             ResultSet resultSet = pst.executeQuery();
             profile_image_url = resultSet.getString("profile_photo_url");
-            
+            System.out.println(profile_image_url);
         } catch (Exception e) {
             //Do nothing
         }
