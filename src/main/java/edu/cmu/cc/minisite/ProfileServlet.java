@@ -124,7 +124,7 @@ public class ProfileServlet extends HttpServlet {
      */
     JsonObject validateLoginAndReturnResult(String name, String pwd) {
         JsonObject result = new JsonObject();
-        String query = "SELECT A FROM B WHERE C = ? AND D = ?";
+        String query = "SELECT profile_photo_url FROM users WHERE username = ? AND pwd = ?";
 
         // TODO: To be implemented
         // Use PreparedStatements, use ResultSet.getString(String columnLabel)
@@ -132,6 +132,22 @@ public class ProfileServlet extends HttpServlet {
         // You may also look at them for expected behavior.
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
+
+        PreparedStatements pst = conn.prepareStatement(query);
+        pst.setString(1, name);
+        pst.setString(2, pwd);
+
+        ResultSet resultSet = pst.executeUpdate();
+        String profile_image_url = resultSet.getString("profile_photo_url");
+
+        if(profile_image_url == null) {
+            name = "Unauthorized";
+            profile_image_url = "#";
+        }
+
+        JsonObject result = new JsonObject();
+        result.addProperty("name", name);
+        result.addProperty("profile", profile_image_url);    
 
         return result;
     }
