@@ -11,7 +11,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Objects;
-
+import java.sql.ResultSet;
+import java.sql.PreparedStatements;
 /**
  * Task 1:
  * This query simulates the login process of a user
