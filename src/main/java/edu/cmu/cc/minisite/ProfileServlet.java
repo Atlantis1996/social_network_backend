@@ -105,12 +105,12 @@ public class ProfileServlet extends HttpServlet {
      * @throws IOException      if an input or output error occurs
      */
     protected void doGet (final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException, SQLException{
+            throws IOException{
         String name = request.getParameter("id");
         String pwd = request.getParameter("pwd");
         try {
             JsonObject result = validateLoginAndReturnResult(name, pwd);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             //Do nothing
         }
         response.setContentType("text/html; charset=UTF-8");
@@ -128,7 +128,7 @@ public class ProfileServlet extends HttpServlet {
      * @param pwd   The password supplied via the HttpServletRequest
      * @return A JsonObject with the servlet's response
      */
-    JsonObject validateLoginAndReturnResult(String name, String pwd) throws SQLException{
+    JsonObject validateLoginAndReturnResult(String name, String pwd) throws Exception{
         JsonObject result = new JsonObject();
         String query = "SELECT profile_photo_url FROM users WHERE username = ? AND pwd = ?";
 
@@ -147,7 +147,7 @@ public class ProfileServlet extends HttpServlet {
     
             ResultSet resultSet = pst.executeQuery();
             profile_image_url = resultSet.getString("profile_photo_url");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             //Do nothing
         }
 
