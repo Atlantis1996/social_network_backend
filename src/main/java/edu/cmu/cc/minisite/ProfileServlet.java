@@ -143,11 +143,13 @@ public class ProfileServlet extends HttpServlet {
 
         try {
             PreparedStatement pst = conn.prepareStatement(query);
+            System.out.println(pst.toString());
             pst.setString(1, name);
             pst.setString(2, pwd);
     
             ResultSet resultSet = pst.executeQuery();
             profile_image_url = resultSet.getString("profile_photo_url");
+            
         } catch (Exception e) {
             //Do nothing
         }
