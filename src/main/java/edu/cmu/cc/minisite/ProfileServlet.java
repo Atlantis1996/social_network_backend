@@ -12,7 +12,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.sql.ResultSet;
-import java.sql.PreparedStatements;
+import java.sql.PreparedStatement;
 /**
  * Task 1:
  * This query simulates the login process of a user
@@ -134,7 +134,7 @@ public class ProfileServlet extends HttpServlet {
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
 
-        PreparedStatements pst = conn.prepareStatement(query);
+        PreparedStatement pst = conn.prepareStatement(query);
         pst.setString(1, name);
         pst.setString(2, pwd);
 
@@ -146,7 +146,6 @@ public class ProfileServlet extends HttpServlet {
             profile_image_url = "#";
         }
 
-        JsonObject result = new JsonObject();
         result.addProperty("name", name);
         result.addProperty("profile", profile_image_url);    
 
