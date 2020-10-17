@@ -134,14 +134,15 @@ public class ProfileServlet extends HttpServlet {
         // You may also look at them for expected behavior.
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
-
+        String profile_image_url;
+        
         try {
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, name);
             pst.setString(2, pwd);
     
             ResultSet resultSet = pst.executeQuery();
-            String profile_image_url = resultSet.getString("profile_photo_url");
+            profile_image_url = resultSet.getString("profile_photo_url");
         } catch (SQLException e) {
             //Do nothing
         }
