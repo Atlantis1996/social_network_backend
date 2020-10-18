@@ -98,15 +98,15 @@ public class HomepageServlet extends HttpServlet {
 
     JsonArray getComments(String id) {
         JsonArray comments = new JsonArray();
-        Filters filter = Filters.eq("uid", id);
-        Sorts sort = Sorts.descending("timestamp", "ups");
-        Projections projection = Projections.fields(Projections.excludeId());
+        // Filters filter = Filters.eq("uid", id);
+        // Sorts sort = Sorts.descending("timestamp", "ups");
+        // Projections projection = Projections.fields(Projections.excludeId());
         System.out.println(id);
 
         MongoCursor<Document> cursor = collection
-                                .find(filter)
-                                .sort(sort)
-                                .projection(projection)
+                                .find(Filters.eq("uid", id))
+                                .sort(Sorts.descending("timestamp", "ups"))
+                                .projection(Projections.fields(Projections.excludeId()))
                                 .iterator();
 
         try {
