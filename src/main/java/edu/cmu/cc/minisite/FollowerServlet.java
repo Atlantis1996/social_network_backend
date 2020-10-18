@@ -115,11 +115,11 @@ public class FollowerServlet extends HttpServlet {
         // TODO: To be implemented
         JsonObject follower = new JsonObject();
         String follower_name, profile_image_url;
-
+        Record record;
         try (Session session = driver.session()) {
             StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee, follower", parameters("username", id));
             while (rs.hasNext()) {
-                Record record = rs.next();
+                record = rs.next();
                 follower = new JsonObject();
                 System.out.println(record.get(0).asString());
 
@@ -127,7 +127,6 @@ public class FollowerServlet extends HttpServlet {
                 follower.addProperty("profile", profile_image_url);
                 followers.add(follower);
 
-                Record record = rs.next();
                 System.out.println(record.get(0).asString());
             }
         }
