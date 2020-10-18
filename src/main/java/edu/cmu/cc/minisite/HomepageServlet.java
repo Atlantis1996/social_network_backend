@@ -107,21 +107,21 @@ public class HomepageServlet extends HttpServlet {
         // Projections projection = new Projections();
         System.out.println(id);
 
-        MongoCursor<Document> cursor = collection
-                                .find(Filters.eq("uid", id))
-                                .sort(Sorts.descending("timestamp", "ups"))
-                                .projection(Projections.fields(Projections.excludeId()))
-                                .iterator();
+        // MongoCursor<Document> cursor = collection
+        //                         .find(Filters.eq("uid", id))
+        //                         .sort(Sorts.descending("timestamp", "ups"))
+        //                         .projection(Projections.fields(Projections.excludeId()))
+        //                         .iterator();
 
-        try {
-            while (cursor.hasNext()) {
-                 JsonObject jsonObject = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
-                 System.out.println(jsonObject.toString());
-                 comments.add(jsonObject);
-             }
-         } finally {
-             cursor.close();
-         }
+        // try {
+        //     while (cursor.hasNext()) {
+        //          JsonObject jsonObject = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+        //          System.out.println(jsonObject.toString());
+        //          comments.add(jsonObject);
+        //      }
+        //  } finally {
+        //      cursor.close();
+        //  }
          return comments;
     }
 }
