@@ -102,7 +102,7 @@ public class HomepageServlet extends HttpServlet {
         // Sorts sort =  new Sorts();
         // Projections projection = new Projections();
 
-        MongoCursor<Document> cursor = collection.find(Filters.eq("uid", id)).sort(Sorts.orderBy(descending("timestamp", "ups"))).projection(Projections.fields(excludeId("_id"))).iterator();
+        MongoCursor<Document> cursor = collection.find(Filters.eq("uid", id)).sort(Sorts.descending("timestamp", "ups")).projection(Projections.excludeId("_id")).iterator();
 
         try {
             while (cursor.hasNext()) {
