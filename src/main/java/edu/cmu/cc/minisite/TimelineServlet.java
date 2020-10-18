@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Objects;
@@ -193,9 +194,9 @@ public class TimelineServlet extends HttpServlet {
         // JsonArray comments = get30Comments(followers);
 
         JsonObject follower;
-        for(int i = 0; i < followers.size(); i++) {
-            follower = followers.getJSONObject(i);
-            name = follower.getString("name");
+        for(JsonElement fl : followers) {
+            follower = fl.getAsJsonObject();
+            name = follower.get("name").asString();
             System.out.prinln(name);
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
