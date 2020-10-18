@@ -191,15 +191,7 @@ public class TimelineServlet extends HttpServlet {
         JsonObject result = new JsonObject();
         JsonArray followers = getFollowers(id);
         String profile_image_url = getUrl(id);
-        // JsonArray comments = get30Comments(followers);
-        String name;
-        JsonObject follower;
-        for(JsonElement fl : followers) {
-            follower = fl.getAsJsonObject();
-            name = follower.get("name").getAsString();
-            System.out.println(name);
-            // filter = Filters.or(filter, Filters.eq("uid", name));
-        }
+        JsonArray comments = get30Comments(followers);
 
         result.add("followers", followers);
         // result.put("comments", comments);
@@ -212,14 +204,14 @@ public class TimelineServlet extends HttpServlet {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
         // Filters filter = Filters.eq("name", "dummy_name"); //TODO
-        // String name;            
-        // JsonObject follower;
-        // for(int i = 0; i < followers.size(); i++) {
-        //     follower = followers.getJSONObject(i);
-        //     name = follower.getString("name");
-        //     System.out.prinln(name);
-        //     // filter = Filters.or(filter, Filters.eq("uid", name));
-        // }
+        String name;            
+        JsonObject follower;
+        for(JsonElement fl : followers) {
+            follower = fl.getAsJsonObject();
+            name = follower.get("name").getAsString();
+            System.out.println(name);
+            // filter = Filters.or(filter, Filters.eq("uid", name));
+        }
 
         // Sorts sort = Sorts.descending("timestamp", "ups");
         // Projections projection = Projections.fields(Projections.excludeId());
