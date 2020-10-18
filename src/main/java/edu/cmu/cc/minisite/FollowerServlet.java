@@ -126,9 +126,9 @@ public class FollowerServlet extends HttpServlet {
                 record = rs.next();
                 follower = new JsonObject();
 
-                follower_name = record.get(1).get("username");
-                profile_image_url = record.get(1).get("url");
-                
+                follower_name = record.get(1).get("username").toString();
+                profile_image_url = record.get(1).get("url").toString();
+
                 follower.addProperty("name", follower_name);
                 follower.addProperty("profile", profile_image_url);
                 followers.add(follower);
