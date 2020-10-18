@@ -66,13 +66,9 @@ public class HomepageServlet extends HttpServlet {
     public HomepageServlet() {
         Objects.requireNonNull(MONGO_HOST);
         MongoClientURI connectionString = new MongoClientURI(URL);
-        System.out.println(3);
         MongoClient mongoClient = new MongoClient(connectionString);
-        System.out.println(0);
         MongoDatabase database = mongoClient.getDatabase(DB_NAME);
-        System.out.println(1);
         collection = database.getCollection(COLLECTION_NAME);
-        System.out.println(2);
     }
 
     /**
@@ -102,27 +98,28 @@ public class HomepageServlet extends HttpServlet {
 
     JsonArray getComments(String id) {
         JsonArray comments = new JsonArray();
-        // Filters filter = new Filters();
-        // Sorts sort =  new Sorts();
-        // Projections projection = new Projections();
+        Filters filter = Filters.eq("uid", id);
+        Sorts sort = Sorts.descending("timestamp", "ups");
+        Projections projection = Projections.fields(Projections.excludeId());
         System.out.println(id);
 
-        // MongoCursor<Document> cursor = collection
-        //                         .find(Filters.eq("uid", id))
-        //                         .sort(Sorts.descending("timestamp", "ups"))
-        //                         .projection(Projections.fields(Projections.excludeId()))
-        //                         .iterator();
+        MongoCursor<Document> cursor = collection
+                                .find(filter)
+                                .sort(sort)
+                                .projection(projection)
+                                .iterator();
 
-        // try {
-        //     while (cursor.hasNext()) {
-        //          JsonObject jsonObject = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
-        //          System.out.println(jsonObject.toString());
-        //          comments.add(jsonObject);
-        //      }
-        //  } finally {
-        //      cursor.close();
-        //  }
-         return comments;
+        try {
+            while (cursor.hasNext()) {
+                 JsonObject jsonObject = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+                 System.out.println(jsonObject.toString());
+                 comments.add(jsonObject);
+             }
+         } finally {
+             cursor.close();
+         }
+
+        return comments;
     }
 }
 

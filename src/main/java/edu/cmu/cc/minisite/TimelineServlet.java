@@ -73,7 +73,82 @@ public class TimelineServlet extends HttpServlet {
     private String getTimeline(String id) {
         JsonObject result = new JsonObject();
         // TODO: implement this method
+        JsonArray followers = getFollowers(id);
+        String profile_image_url = getUrl(id);
+        JsonArray comments = get30Comments(followers);
+
+        result.addProperty("followers", followers);
+        result.addProperty("comments", comments);
+        result.addProperty("profile", profile_image_url);
+        result.addProperty("name", id);
         return result.toString();
+    }
+
+    public JsonArray get30Comments(JsonArray followers) {
+        JsonArray comments = new JsonArray();
+
+        Filters filter = Filters.eq("uid", id); //TODO
+        Sorts sort = Sorts.descending("timestamp", "ups");
+        Projections projection = Projections.fields(Projections.excludeId());
+        
+        MongoCursor<Document> cursor = collection
+                        .find(filter)
+                        .sort(sort)
+                        .projection(projection)
+                        .limit(30)
+                        .iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+                 //TODO
+                 comments.add(comment);
+             }
+         } finally {
+             cursor.close();
+         }
+
+        return comments;
+    }
+
+    public String getUrl(String id) {
+        String profile_image_url;
+        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+
+        try (Session session = driver.session()) {
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee", parameters);
+            record = rs.next();
+            profile_image_url = record.get(0).get("url").asString();
+        }
+        return profile_image_url;
+    }
+
+
+    public JsonArray getFollowers(String id) {
+        JsonArray followers = new JsonArray();
+        // TODO: To be implemented
+        JsonObject follower = new JsonObject();
+        String follower_name, profile_image_url;
+        Record record;
+        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+
+        try (Session session = driver.session()) {
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower ORDER BY follower.username", parameters);
+            while (rs.hasNext()) {
+                record = rs.next();
+                follower = new JsonObject();
+
+                follower_name = record.get(0).get("username").asString();
+                profile_image_url = record.get(0).get("url").asString();
+
+                follower.addProperty("profile", profile_image_url);
+                follower.addProperty("name", follower_name);
+                followers.add(follower);
+
+            }
+        }
+    
+        return followers;
     }
 }
 
