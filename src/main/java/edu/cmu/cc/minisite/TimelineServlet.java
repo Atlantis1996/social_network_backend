@@ -197,7 +197,7 @@ public class TimelineServlet extends HttpServlet {
         for(JsonElement fl : followers) {
             follower = fl.getAsJsonObject();
             name = follower.get("name").getAsString();
-            System.out.prinln(name);
+            System.out.println(name);
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
 
