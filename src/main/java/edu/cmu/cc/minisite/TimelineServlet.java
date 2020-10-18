@@ -155,7 +155,7 @@ public class TimelineServlet extends HttpServlet {
                 "bolt://" + NEO4J_HOST + ":7687",
                 AuthTokens.basic(NEO4J_NAME, NEO4J_PWD));
     }
-    
+
     /**
      * Don't modify this method.
      *
@@ -188,47 +188,47 @@ public class TimelineServlet extends HttpServlet {
      */
     private String getTimeline(String id) {
         JsonObject result = new JsonObject();
-        JsonArray followers = getFollowers(id);
-        String profile_image_url = getUrl(id);
-        JsonArray comments = get30Comments(followers);
+        // JsonArray followers = getFollowers(id);
+        // String profile_image_url = getUrl(id);
+        // JsonArray comments = get30Comments(followers);
 
-        result.put("followers", followers);
-        result.put("comments", comments);
-        result.addProperty("profile", profile_image_url);
-        result.addProperty("name", id);
+        // result.put("followers", followers);
+        // result.put("comments", comments);
+        // result.addProperty("profile", profile_image_url);
+        // result.addProperty("name", id);
         return result.toString();
     }
 
     public JsonArray get30Comments(JsonArray followers) {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
-        Filters filter = Filters.eq("name", "dummy_name"); //TODO
-        String name;
-        for(int i = 0; i < followers.size(); i++) {
-            JsonObject follower = followers.getJsonObject(i);
-            name = follower.getString("name");
-            filter = Filters.or(filter, Filters.eq("uid", name));
-        }
+        // Filters filter = Filters.eq("name", "dummy_name"); //TODO
+        // String name;
+        // for(int i = 0; i < followers.size(); i++) {
+        //     JsonObject follower = followers.getJsonObject(i);
+        //     name = follower.getString("name");
+        //     filter = Filters.or(filter, Filters.eq("uid", name));
+        // }
 
-        Sorts sort = Sorts.descending("timestamp", "ups");
-        Projections projection = Projections.fields(Projections.excludeId());
+        // Sorts sort = Sorts.descending("timestamp", "ups");
+        // Projections projection = Projections.fields(Projections.excludeId());
         
-        MongoCursor<Document> cursor = collection
-                        .find(filter)
-                        .sort(sort)
-                        .projection(projection)
-                        .limit(30)
-                        .iterator();
+        // MongoCursor<Document> cursor = collection
+        //                 .find(filter)
+        //                 .sort(sort)
+        //                 .projection(projection)
+        //                 .limit(30)
+        //                 .iterator();
 
-        try {
-            while (cursor.hasNext()) {
-                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
-              //TODO   
-                 comments.add(comment);
-             }
-         } finally {
-             cursor.close();
-         }
+        // try {
+        //     while (cursor.hasNext()) {
+        //          JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+        //       //TODO   
+        //          comments.add(comment);
+        //      }
+        //  } finally {
+        //      cursor.close();
+        //  }
 
         return comments;
     }
