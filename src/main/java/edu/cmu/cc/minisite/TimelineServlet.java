@@ -205,6 +205,7 @@ public class TimelineServlet extends HttpServlet {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
         Bson filter = Filters.eq("name", "Fortanono"); //TODO
+
         String name;            
         JsonObject follower;
         for(JsonElement fl : followers) {
@@ -214,13 +215,12 @@ public class TimelineServlet extends HttpServlet {
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
 
-        Bson sort = Sorts.descending("timestamp", "ups");
-        Bson projection = Projections.fields(Projections.excludeId());
+
         
         MongoCursor<Document> cursor = collection
-                        .find(filter)
-                        .sort(sort)
-                        .projection(projection)
+                        .find(Filters.eq("uid", id))
+                        .sort(Sorts.descending("timestamp", "ups"))
+                        .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
 
@@ -228,6 +228,7 @@ public class TimelineServlet extends HttpServlet {
             while (cursor.hasNext()) {
                  JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
+                System.out.println(comment.toString());
                  comments.add(comment);
              }
          } finally {
