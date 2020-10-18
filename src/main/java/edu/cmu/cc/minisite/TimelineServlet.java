@@ -78,7 +78,73 @@ public class TimelineServlet extends HttpServlet {
     /**
      * Your initialization code goes here.
      */
+
+    /**
+     * The Neo4j driver.
+     */
+    private final Driver driver;
+
+    /**
+     * The endpoint of the database.
+     *
+     * To avoid hardcoding credentials, use environment variables to include
+     * the credentials.
+     *
+     * e.g., before running "mvn clean package exec:java" to start the server
+     * run the following commands to set the environment variables.
+     * export NEO4J_HOST=...
+     * export NEO4J_NAME=...
+     * export NEO4J_PWD=...
+     */
+    private static final String NEO4J_HOST = System.getenv("NEO4J_HOST");
+    /**
+     * Neo4J username.
+     */
+    private static final String NEO4J_NAME = System.getenv("NEO4J_NAME");
+    /**
+     * Neo4J Password.
+     */
+    private static final String NEO4J_PWD = System.getenv("NEO4J_PWD");
+    
+    /**
+     * The endpoint of the database.
+     *
+     * To avoid hardcoding credentials, use environment variables to include
+     * the credentials.
+     *
+     * e.g., before running "mvn clean package exec:java" to start the server
+     * run the following commands to set the environment variables.
+     * export MONGO_HOST=...
+     */
+    private static final String MONGO_HOST = System.getenv("MONGO_HOST");
+    /**
+     * MongoDB server URL.
+     */
+    private static final String URL = "mongodb://" + MONGO_HOST + ":27017";
+    /**
+     * Database name.
+     */
+    private static final String DB_NAME = "reddit_db";
+    /**
+     * Collection name.
+     */
+    private static final String COLLECTION_NAME = "posts";
+    /**
+     * MongoDB connection.
+     */
+    private static MongoCollection<Document> collection;
+    
     public TimelineServlet() {
+        Objects.requireNonNull(NEO4J_HOST);
+        Objects.requireNonNull(NEO4J_NAME);
+        Objects.requireNonNull(NEO4J_PWD);
+        driver = getDriver();
+
+        Objects.requireNonNull(MONGO_HOST);
+        MongoClientURI connectionString = new MongoClientURI(URL);
+        MongoClient mongoClient = new MongoClient(connectionString);
+        MongoDatabase database = mongoClient.getDatabase(DB_NAME);
+        collection = database.getCollection(COLLECTION_NAME);
     }
 
     /**
