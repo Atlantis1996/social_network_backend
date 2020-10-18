@@ -9,6 +9,47 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Objects;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
+
+import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
+import java.util.*; 
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Objects;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.bson.Document;
+
+import com.google.gson.JsonParser;
+import com.mongodb.client.MongoCursor;
+
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 
 /**
  * In this task you will populate a user's timeline.
@@ -72,83 +113,87 @@ public class TimelineServlet extends HttpServlet {
      */
     private String getTimeline(String id) {
         JsonObject result = new JsonObject();
-        // TODO: implement this method
-        // JsonArray followers = getFollowers(id);
-        // String profile_image_url = getUrl(id);
-        // JsonArray comments = get30Comments(followers);
+        JsonArray followers = getFollowers(id);
+        String profile_image_url = getUrl(id);
+        JsonArray comments = get30Comments(followers);
 
-        // result.addProperty("followers", followers);
-        // result.addProperty("comments", comments);
-        // result.addProperty("profile", profile_image_url);
-        // result.addProperty("name", id);
+        result.addProperty("followers", followers);
+        result.addProperty("comments", comments);
+        result.addProperty("profile", profile_image_url);
+        result.addProperty("name", id);
         return result.toString();
     }
 
-    // public JsonArray get30Comments(JsonArray followers) {
-    //     JsonArray comments = new JsonArray();
-    //     JsonObject parentComment, grandParentComment;
-    //     Filters filter = Filters.eq("uid", id); //TODO
-    //     Sorts sort = Sorts.descending("timestamp", "ups");
-    //     Projections projection = Projections.fields(Projections.excludeId());
+    public JsonArray get30Comments(JsonArray followers) {
+        JsonArray comments = new JsonArray();
+        JsonObject parentComment, grandParentComment;
+        Filters filter = Filters.eq("name", "dummy_name"); //TODO
+        String name;
+        for(JsonObject follower: followers) {
+            name = follower.getString("name");
+            filter = Filters.or(filter, Filters.eq("uid", name));
+        }
+
+        Sorts sort = Sorts.descending("timestamp", "ups");
+        Projections projection = Projections.fields(Projections.excludeId());
         
-    //     MongoCursor<Document> cursor = collection
-    //                     .find(filter)
-    //                     .sort(sort)
-    //                     .projection(projection)
-    //                     .limit(30)
-    //                     .iterator();
+        MongoCursor<Document> cursor = collection
+                        .find(filter)
+                        .sort(sort)
+                        .projection(projection)
+                        .limit(30)
+                        .iterator();
 
-    //     try {
-    //         while (cursor.hasNext()) {
-    //              JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
-    //              //TODO
-    //              comments.add(comment);
-    //          }
-    //      } finally {
-    //          cursor.close();
-    //      }
+        try {
+            while (cursor.hasNext()) {
+                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+              //TODO   
+                 comments.add(comment);
+             }
+         } finally {
+             cursor.close();
+         }
 
-    //     return comments;
-    // }
+        return comments;
+    }
 
-    // public String getUrl(String id) {
-    //     String profile_image_url;
-    //     Map<String,Object> parameters = Collections.singletonMap( "username", id );
+    public String getUrl(String id) {
+        String profile_image_url;
+        Map<String,Object> parameters = Collections.singletonMap( "username", id );
 
-    //     try (Session session = driver.session()) {
-    //         StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee", parameters);
-    //         record = rs.next();
-    //         profile_image_url = record.get(0).get("url").asString();
-    //     }
-    //     return profile_image_url;
-    // }
+        try (Session session = driver.session()) {
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee", parameters);
+            record = rs.next();
+            profile_image_url = record.get(0).get("url").asString();
+        }
+        return profile_image_url;
+    }
 
 
-    // public JsonArray getFollowers(String id) {
-    //     JsonArray followers = new JsonArray();
-    //     // TODO: To be implemented
-    //     JsonObject follower = new JsonObject();
-    //     String follower_name, profile_image_url;
-    //     Record record;
-    //     Map<String,Object> parameters = Collections.singletonMap( "username", id );
+    public JsonArray getFollowers(String id) {
+        JsonArray followers = new JsonArray();
+        JsonObject follower = new JsonObject();
+        String follower_name, profile_image_url;
+        Record record;
+        Map<String,Object> parameters = Collections.singletonMap( "username", id );
 
-    //     try (Session session = driver.session()) {
-    //         StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower ORDER BY follower.username", parameters);
-    //         while (rs.hasNext()) {
-    //             record = rs.next();
-    //             follower = new JsonObject();
+        try (Session session = driver.session()) {
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower ORDER BY follower.username", parameters);
+            while (rs.hasNext()) {
+                record = rs.next();
+                follower = new JsonObject();
 
-    //             follower_name = record.get(0).get("username").asString();
-    //             profile_image_url = record.get(0).get("url").asString();
+                follower_name = record.get(0).get("username").asString();
+                profile_image_url = record.get(0).get("url").asString();
 
-    //             follower.addProperty("profile", profile_image_url);
-    //             follower.addProperty("name", follower_name);
-    //             followers.add(follower);
+                follower.addProperty("profile", profile_image_url);
+                follower.addProperty("name", follower_name);
+                followers.add(follower);
 
-    //         }
-    //     }
+            }
+        }
     
-    //     return followers;
-    // }
+        return followers;
+    }
 }
 
