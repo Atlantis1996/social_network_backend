@@ -203,9 +203,10 @@ public class TimelineServlet extends HttpServlet {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
         // Filters filter = Filters.eq("name", "dummy_name"); //TODO
-        // String name;
+        // String name;            
+        JsonObject follower;
         for(int i = 0; i < followers.size(); i++) {
-            JsonObject follower = followers.getJsonObject(i);
+            follower = followers.getJsonObject(i);
             name = follower.getString("name");
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
