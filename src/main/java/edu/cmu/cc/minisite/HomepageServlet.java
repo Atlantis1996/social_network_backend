@@ -1,6 +1,7 @@
 package edu.cmu.cc.minisite;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
@@ -87,6 +88,8 @@ public class HomepageServlet extends HttpServlet {
         JsonObject result = new JsonObject();
         String id = request.getParameter("id");
         // TODO: To be implemented
+        JsonObject result = new JsonObject();
+        result.add("comments", getComments(id));
         response.setContentType("text/html; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
