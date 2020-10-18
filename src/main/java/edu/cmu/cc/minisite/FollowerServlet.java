@@ -13,6 +13,9 @@ import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 
+import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
 /**
  * Task 2:
  * Implement your logic to retrieve the followers of this user.
@@ -110,6 +113,27 @@ public class FollowerServlet extends HttpServlet {
     public JsonArray getFollowers(String id) {
         JsonArray followers = new JsonArray();
         // TODO: To be implemented
+        JsonObject follower = new JsonObject();
+        String follower_name, profile_image_url;
+
+        try (Session session = driver.session()) {
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) 
+                                                WHERE followee.username = $username
+                                                RETURN followee, follower", parameters("username", id));
+            while (rs.hasNext()) {
+                Record record = rs.next();
+                follower = new JsonObject();
+                System.out.println(record.get(0).asString());
+                
+                follower.addProperty("name", follower_name);
+                follower.addProperty("profile", profile_image_url);
+                followers.add(follower);
+
+                Record record = rs.next();
+                System.out.println(record.get(0).asString());
+            }
+        }
+    
         return followers;
     }
 }
