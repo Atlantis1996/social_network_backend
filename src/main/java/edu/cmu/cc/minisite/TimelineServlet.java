@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoCursor;
@@ -203,7 +204,7 @@ public class TimelineServlet extends HttpServlet {
     public JsonArray get30Comments(JsonArray followers) {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
-        // Filters filter = Filters.eq("name", "dummy_name"); //TODO
+        Bson filter = Filters.eq("name", "Fortanono"); //TODO
         String name;            
         JsonObject follower;
         for(JsonElement fl : followers) {
@@ -213,25 +214,25 @@ public class TimelineServlet extends HttpServlet {
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
 
-        // Sorts sort = Sorts.descending("timestamp", "ups");
-        // Projections projection = Projections.fields(Projections.excludeId());
+        Bson sort = Sorts.descending("timestamp", "ups");
+        Bson projection = Projections.fields(Projections.excludeId());
         
-        // MongoCursor<Document> cursor = collection
-        //                 .find(filter)
-        //                 .sort(sort)
-        //                 .projection(projection)
-        //                 .limit(30)
-        //                 .iterator();
+        MongoCursor<Document> cursor = collection
+                        .find(filter)
+                        .sort(sort)
+                        .projection(projection)
+                        .limit(30)
+                        .iterator();
 
-        // try {
-        //     while (cursor.hasNext()) {
-        //          JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
-        //       //TODO   
-        //          comments.add(comment);
-        //      }
-        //  } finally {
-        //      cursor.close();
-        //  }
+        try {
+            while (cursor.hasNext()) {
+                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+              //TODO   
+                 comments.add(comment);
+             }
+         } finally {
+             cursor.close();
+         }
 
         return comments;
     }
