@@ -192,7 +192,7 @@ public class TimelineServlet extends HttpServlet {
         JsonArray followers = getFollowers(id);
         String profile_image_url = getUrl(id);
         // JsonArray comments = get30Comments(followers);
-
+        String name;
         JsonObject follower;
         for(JsonElement fl : followers) {
             follower = fl.getAsJsonObject();
