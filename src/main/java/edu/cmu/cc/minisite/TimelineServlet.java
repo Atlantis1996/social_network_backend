@@ -133,7 +133,7 @@ public class TimelineServlet extends HttpServlet {
      * MongoDB connection.
      */
     private static MongoCollection<Document> collection;
-    
+
     public TimelineServlet() {
         Objects.requireNonNull(NEO4J_HOST);
         Objects.requireNonNull(NEO4J_NAME);
@@ -195,7 +195,8 @@ public class TimelineServlet extends HttpServlet {
         JsonObject parentComment, grandParentComment;
         Filters filter = Filters.eq("name", "dummy_name"); //TODO
         String name;
-        for(JsonObject follower: followers) {
+        for(int i = 0; i < followers.size(); i++) {
+            JsonObject follower = followers.getAsJsonObject(i);
             name = follower.getString("name");
             filter = Filters.or(filter, Filters.eq("uid", name));
         }
