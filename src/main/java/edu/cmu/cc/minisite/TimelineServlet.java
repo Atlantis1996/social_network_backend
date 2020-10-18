@@ -204,7 +204,7 @@ public class TimelineServlet extends HttpServlet {
     public JsonArray get30Comments(JsonArray followers) {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
-        Bson filter = Filters.eq("name", "Fortanono"); //TODO
+        Bson filter = Filters.eq("uid", "Fortanono"); //TODO
 
         String name;            
         JsonObject follower;
@@ -218,7 +218,7 @@ public class TimelineServlet extends HttpServlet {
 
         
         MongoCursor<Document> cursor = collection
-                        .find(Filters.eq("uid", "Fortanono"))
+                        .find(filter)
                         .sort(Sorts.descending("timestamp", "ups"))
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
