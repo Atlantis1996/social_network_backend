@@ -147,6 +147,15 @@ public class TimelineServlet extends HttpServlet {
         collection = database.getCollection(COLLECTION_NAME);
     }
 
+    private Driver getDriver() {
+        Objects.requireNonNull(NEO4J_HOST);
+        Objects.requireNonNull(NEO4J_NAME);
+        Objects.requireNonNull(NEO4J_PWD);
+        return GraphDatabase.driver(
+                "bolt://" + NEO4J_HOST + ":7687",
+                AuthTokens.basic(NEO4J_NAME, NEO4J_PWD));
+    }
+    
     /**
      * Don't modify this method.
      *
@@ -183,8 +192,8 @@ public class TimelineServlet extends HttpServlet {
         String profile_image_url = getUrl(id);
         JsonArray comments = get30Comments(followers);
 
-        result.addProperty("followers", followers);
-        result.addProperty("comments", comments);
+        result.put("followers", followers);
+        result.put("comments", comments);
         result.addProperty("profile", profile_image_url);
         result.addProperty("name", id);
         return result.toString();
@@ -196,7 +205,7 @@ public class TimelineServlet extends HttpServlet {
         Filters filter = Filters.eq("name", "dummy_name"); //TODO
         String name;
         for(int i = 0; i < followers.size(); i++) {
-            JsonObject follower = followers.getAsJsonObject(i);
+            JsonObject follower = followers.getJsonObject(i);
             name = follower.getString("name");
             filter = Filters.or(filter, Filters.eq("uid", name));
         }
@@ -227,7 +236,7 @@ public class TimelineServlet extends HttpServlet {
     public String getUrl(String id) {
         String profile_image_url;
         Map<String,Object> parameters = Collections.singletonMap( "username", id );
-
+        Record record;
         try (Session session = driver.session()) {
             StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee", parameters);
             record = rs.next();
