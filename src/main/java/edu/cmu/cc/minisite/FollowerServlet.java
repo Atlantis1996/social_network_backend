@@ -121,13 +121,13 @@ public class FollowerServlet extends HttpServlet {
         Map<String,Object> parameters = Collections.singletonMap( "username", id );
 
         try (Session session = driver.session()) {
-            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower.username follower.url", parameters);
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
                 follower = new JsonObject();
 
-                follower_name = record.get(0).asString();
-                profile_image_url = record.get(1).asString();
+                follower_name = record.get(0).get("name").toString();
+                profile_image_url = record.get(0).get("url").asString();
 
                 follower.addProperty("profile", profile_image_url);
                 follower.addProperty("name", follower_name);
