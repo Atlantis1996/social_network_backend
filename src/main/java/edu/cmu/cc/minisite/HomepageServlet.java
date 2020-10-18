@@ -112,6 +112,7 @@ public class HomepageServlet extends HttpServlet {
          } finally {
              cursor.close();
          }
+         return comments;
     }
 }
 
