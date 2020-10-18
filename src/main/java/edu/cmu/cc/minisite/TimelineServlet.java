@@ -206,7 +206,7 @@ public class TimelineServlet extends HttpServlet {
         // String name;            
         JsonObject follower;
         for(int i = 0; i < followers.size(); i++) {
-            follower = followers.getJsonObject(i);
+            follower = followers.getJSONObject(i);
             name = follower.getString("name");
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
