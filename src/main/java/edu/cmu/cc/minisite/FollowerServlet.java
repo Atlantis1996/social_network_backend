@@ -125,13 +125,12 @@ public class FollowerServlet extends HttpServlet {
             while (rs.hasNext()) {
                 record = rs.next();
                 follower = new JsonObject();
-                System.out.println(record.get(0).asString());
+                System.out.println(record.get(0).toString());
 
                 // follower.addProperty("name", follower_name);
                 // follower.addProperty("profile", profile_image_url);
                 // followers.add(follower);
 
-                System.out.println(record.get(0).asString());
             }
         }
     
