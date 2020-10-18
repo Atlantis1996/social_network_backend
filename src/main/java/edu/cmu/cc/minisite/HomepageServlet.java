@@ -105,7 +105,7 @@ public class HomepageServlet extends HttpServlet {
 
         MongoCursor<Document> cursor = collection
                                 .find(Filters.eq("uid", id))
-                                .sort(Sorts.descending("timestamp", "ups"))
+                                .sort(Sorts.descending("ups", "timestamp"))
                                 .projection(Projections.fields(Projections.excludeId()))
                                 .iterator();
 
