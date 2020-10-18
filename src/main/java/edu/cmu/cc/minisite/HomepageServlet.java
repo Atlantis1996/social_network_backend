@@ -87,8 +87,7 @@ public class HomepageServlet extends HttpServlet {
 
         JsonObject result = new JsonObject();
         String id = request.getParameter("id");
-        // TODO: To be implemented
-        JsonObject result = new JsonObject();
+        // TODO: To be implemented˝
         result.add("comments", getComments(id));
         response.setContentType("text/html; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -103,7 +102,7 @@ public class HomepageServlet extends HttpServlet {
         // Sorts sort =  new Sorts();
         // Projections projection = new Projections();
 
-        MongoCursor<Document> cursor = collection.find(eq("uid", id)).sort(orderBy(descending("timestamp", "ups"))).projection(fields(excludeId("_id"))).iterator();
+        MongoCursor<Document> cursor = collection.find(Filters.eq("uid", id)).sort(Sorts.orderBy(descending("timestamp", "ups"))).projection(Projections.fields(excludeId("_id"))).iterator();
 
         try {
             while (cursor.hasNext()) {
