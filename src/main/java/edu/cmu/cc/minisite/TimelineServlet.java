@@ -196,7 +196,7 @@ public class TimelineServlet extends HttpServlet {
         JsonObject follower;
         for(JsonElement fl : followers) {
             follower = fl.getAsJsonObject();
-            name = follower.get("name").asString();
+            name = follower.get("name").getAsString();
             System.out.prinln(name);
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
@@ -213,13 +213,13 @@ public class TimelineServlet extends HttpServlet {
         JsonObject parentComment, grandParentComment;
         // Filters filter = Filters.eq("name", "dummy_name"); //TODO
         // String name;            
-        JsonObject follower;
-        for(int i = 0; i < followers.size(); i++) {
-            follower = followers.getJSONObject(i);
-            name = follower.getString("name");
-            System.out.prinln(name);
-            // filter = Filters.or(filter, Filters.eq("uid", name));
-        }
+        // JsonObject follower;
+        // for(int i = 0; i < followers.size(); i++) {
+        //     follower = followers.getJSONObject(i);
+        //     name = follower.getString("name");
+        //     System.out.prinln(name);
+        //     // filter = Filters.or(filter, Filters.eq("uid", name));
+        // }
 
         // Sorts sort = Sorts.descending("timestamp", "ups");
         // Projections projection = Projections.fields(Projections.excludeId());
