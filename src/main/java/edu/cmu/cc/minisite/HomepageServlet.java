@@ -103,11 +103,12 @@ public class HomepageServlet extends HttpServlet {
         // Projections projection = new Projections();
 
         MongoCursor<Document> cursor = collection.find(Filters.eq("uid", id)).sort(Sorts.descending("timestamp", "ups")).projection(Projections.excludeId()).iterator();
-
+        
         try {
             while (cursor.hasNext()) {
                  JsonObject jsonObject = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
                  System.out.println(jsonObject.toString());
+                 comments.add(jsonObject);
              }
          } finally {
              cursor.close();
