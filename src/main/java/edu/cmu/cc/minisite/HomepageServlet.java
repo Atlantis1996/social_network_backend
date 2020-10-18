@@ -66,9 +66,13 @@ public class HomepageServlet extends HttpServlet {
     public HomepageServlet() {
         Objects.requireNonNull(MONGO_HOST);
         MongoClientURI connectionString = new MongoClientURI(URL);
+        System.out.println(3);
         MongoClient mongoClient = new MongoClient(connectionString);
+        System.out.println(0);
         MongoDatabase database = mongoClient.getDatabase(DB_NAME);
+        System.out.println(1);
         collection = database.getCollection(COLLECTION_NAME);
+        System.out.println(2);
     }
 
     /**
