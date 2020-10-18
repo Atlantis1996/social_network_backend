@@ -190,7 +190,15 @@ public class TimelineServlet extends HttpServlet {
         JsonObject result = new JsonObject();
         JsonArray followers = getFollowers(id);
         String profile_image_url = getUrl(id);
-        JsonArray comments = get30Comments(followers);
+        // JsonArray comments = get30Comments(followers);
+
+        JsonObject follower;
+        for(int i = 0; i < followers.size(); i++) {
+            follower = followers.getJSONObject(i);
+            name = follower.getString("name");
+            System.out.prinln(name);
+            // filter = Filters.or(filter, Filters.eq("uid", name));
+        }
 
         result.add("followers", followers);
         // result.put("comments", comments);
@@ -208,6 +216,7 @@ public class TimelineServlet extends HttpServlet {
         for(int i = 0; i < followers.size(); i++) {
             follower = followers.getJSONObject(i);
             name = follower.getString("name");
+            System.out.prinln(name);
             // filter = Filters.or(filter, Filters.eq("uid", name));
         }
 
