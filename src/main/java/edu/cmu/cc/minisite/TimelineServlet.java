@@ -204,11 +204,11 @@ public class TimelineServlet extends HttpServlet {
         JsonObject parentComment, grandParentComment;
         // Filters filter = Filters.eq("name", "dummy_name"); //TODO
         // String name;
-        // for(int i = 0; i < followers.size(); i++) {
-        //     JsonObject follower = followers.getJsonObject(i);
-        //     name = follower.getString("name");
-        //     filter = Filters.or(filter, Filters.eq("uid", name));
-        // }
+        for(int i = 0; i < followers.size(); i++) {
+            JsonObject follower = followers.getJsonObject(i);
+            name = follower.getString("name");
+            // filter = Filters.or(filter, Filters.eq("uid", name));
+        }
 
         // Sorts sort = Sorts.descending("timestamp", "ups");
         // Projections projection = Projections.fields(Projections.excludeId());
