@@ -189,13 +189,13 @@ public class TimelineServlet extends HttpServlet {
     private String getTimeline(String id) {
         JsonObject result = new JsonObject();
         JsonArray followers = getFollowers(id);
-        // String profile_image_url = getUrl(id);
-        // JsonArray comments = get30Comments(followers);
+        String profile_image_url = getUrl(id);
+        JsonArray comments = get30Comments(followers);
 
         result.add("followers", followers);
         // result.put("comments", comments);
-        // result.addProperty("profile", profile_image_url);
-        // result.addProperty("name", id);
+        result.addProperty("profile", profile_image_url);
+        result.addProperty("name", id);
         return result.toString();
     }
 
