@@ -99,7 +99,7 @@ q3() {
   # B. A hot storage system with optimized IOPS to store BLOB content. 
   # C. Neo4j to store relationships between users. 
   # D. A warm storage system to store the most popular content.  
-  echo "ACD"
+  echo "BC"
 }
 
 q4() {
@@ -120,7 +120,7 @@ q4() {
   # B. At most 36% of user requests take more than 1 second.
   # C. More than 63% of user requests take more than 1 second.
   # D. 100% of user requests take more than 1 second. 
-  echo "BC"
+  echo "BCD"
 }
 
 ################################################################################
@@ -317,7 +317,7 @@ q10() {
   # 4. Document Storage
   # 5. Support for Indexing
   # 6. High Scalability
-  echo 12456
+  echo 456
 }
 
 ###############################################################################
