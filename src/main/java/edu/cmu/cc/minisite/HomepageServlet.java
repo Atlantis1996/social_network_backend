@@ -16,7 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
 
+import com.google.gson.JsonParser;
+import com.mongodb.client.MongoCursor;
 
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 /**
  * Task 3:
  * Implement your logic to return all the comments authored by this user.
@@ -87,6 +92,24 @@ public class HomepageServlet extends HttpServlet {
         PrintWriter writer = response.getWriter();
         writer.write(result.toString());
         writer.close();
+    }
+
+    JsonArray getComments(String id) {
+        JsonArray comments = new JsonArray();
+        // Filters filter = new Filters();
+        // Sorts sort =  new Sorts();
+        // Projections projection = new Projections();
+
+        MongoCursor<Document> cursor = collection.find(eq("uid", id)).sort(orderBy(descending("timestamp", "ups"))).projection(fields(excludeId("_id"))).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                 JsonObject jsonObject = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+                 System.out.println(jsonObject.toString());
+             }
+         } finally {
+             cursor.close();
+         }
     }
 }
 
