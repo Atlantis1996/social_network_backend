@@ -228,12 +228,16 @@ public class TimelineServlet extends HttpServlet {
                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
                 parentId = comment.get("parent_id").getAsString();
+                parentComment = null;
                 parentComment = getParentComment(parentId);
-                comment.add("parent", parentComment);
                 if(parentComment != null) {
+                    comment.add("parent", parentComment);
                     grandParentId = parentComment.get("parent_id").getAsString();
+                    grandParentComment = null;
                     grandParentComment = getParentComment(grandParentId);
-                    comment.add("grand_parent", grandParentComment);
+                    if(grandParentComment != null) {
+                        comment.add("grand_parent", grandParentComment);
+                    }
                 }
                 comments.add(comment);
              }
