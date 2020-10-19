@@ -273,8 +273,8 @@ public class TimelineServlet extends HttpServlet {
         Record record;
         try (Session session = driver.session()) {
             StatementResult rs = session
-                            .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User)" 
-                            + "WHERE followee.username = $username" 
+                            .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) " 
+                            + "WHERE followee.username = $username " 
                             + "RETURN followee", parameters);
             record = rs.next();
             profileImageUrl = record.get(0).get("url").asString();
@@ -292,8 +292,8 @@ public class TimelineServlet extends HttpServlet {
 
         try (Session session = driver.session()) {
             StatementResult rs = session
-                                .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User)" 
-                                + "WHERE followee.username = $username" 
+                                .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) " 
+                                + "WHERE followee.username = $username " 
                                 + "RETURN follower ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
@@ -321,8 +321,8 @@ public class TimelineServlet extends HttpServlet {
 
         try (Session session = driver.session()) {
             StatementResult rs = session
-                                    .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User)" 
-                                    + "WHERE follower.username = $username" 
+                                    .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) " 
+                                    + "WHERE follower.username = $username " 
                                     + "RETURN followee ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();

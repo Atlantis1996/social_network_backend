@@ -122,8 +122,8 @@ public class FollowerServlet extends HttpServlet {
 
         try (Session session = driver.session()) {
             StatementResult rs = session
-                                    .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User)" 
-                                    + "WHERE followee.username = $username" 
+                                    .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) " 
+                                    + "WHERE followee.username = $username " 
                                     + "RETURN follower ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
