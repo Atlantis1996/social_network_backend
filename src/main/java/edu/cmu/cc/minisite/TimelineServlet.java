@@ -223,14 +223,27 @@ public class TimelineServlet extends HttpServlet {
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
-        int i=0;
         try {
             while (cursor.hasNext()) {
-                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+                JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
-                 comments.add(comment);
-                 i++;
-                 System.out.println(i);
+                String parentId = comment.get("parent_id").getAsString();
+                MongoCursor<Document> parentCursor = collection
+                                            .find(Filters.eq("parent_id", parentId))
+                                            .projection(Projections.fields(Projections.excludeId()))
+                                            .iterator();
+                try {
+                    while (parentCursor.hasNext()) {
+                            JsonObject parentComment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
+                            System.out.println(parentComment.toString());
+                            parentComment.add(jsonObject);
+                        }
+                } finally {
+                    parentCursor.close();
+                }
+                
+                System.out.println()
+                comments.add(comment);
              }
          } finally {
              cursor.close();
