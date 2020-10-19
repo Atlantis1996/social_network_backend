@@ -10,15 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+
 import com.google.gson.JsonElement;
-import java.io.IOException;
-import java.io.PrintWriter;
+
+
 import java.util.Objects;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+
+
+
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -26,22 +26,22 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
-import java.util.*; 
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
+
+
+
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Objects;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+
+
+
+
+
+
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -192,12 +192,12 @@ public class TimelineServlet extends HttpServlet {
         JsonObject result = new JsonObject();
         JsonArray followers = getFollowers(id);
         JsonArray followees = getFollowees(id);
-        String profile_image_url = getUrl(id);
+        String profileImageUrl = getUrl(id);
         JsonArray comments = get30Comments(followees);
 
         result.add("followers", followers);
         result.add("comments", comments);
-        result.addProperty("profile", profile_image_url);
+        result.addProperty("profile", profileImageUrl);
         result.addProperty("name", id);
         return result.toString();
     }
@@ -209,7 +209,7 @@ public class TimelineServlet extends HttpServlet {
 
         String name, parentId, grandParentId;            
         JsonObject followee;
-        for(JsonElement fl : followees) {
+        for (JsonElement fl : followees) {
             followee = fl.getAsJsonObject();
             name = followee.get("name").getAsString();
             System.out.println(name);
@@ -224,30 +224,27 @@ public class TimelineServlet extends HttpServlet {
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
-        int i=0;
         try {
             while (cursor.hasNext()) {
-                i++;
                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
                 parentId = comment.get("parent_id").getAsString();
                 parentComment = null;
                 parentComment = getParentComment(parentId);
-                if(parentComment != null) {
+                if (parentComment != null) {
                     comment.add("parent", parentComment);
                     grandParentId = parentComment.get("parent_id").getAsString();
                     grandParentComment = null;
                     grandParentComment = getParentComment(grandParentId);
-                    if(grandParentComment != null) {
+                    if (grandParentComment != null) {
                         comment.add("grand_parent", grandParentComment);
                     }
                 }
                 comments.add(comment);
-                System.out.println(i);
              }    
-         } catch (Exception e){
+         } catch (Exception e) {
             e.printStackTrace();
-         }finally {
+         } finally {
              cursor.close();
          }
 
@@ -271,36 +268,42 @@ public class TimelineServlet extends HttpServlet {
     }
 
     public String getUrl(String id) {
-        String profile_image_url;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        String profileImageUrl;
+        Map<String,Object> parameters = Collections.singletonMap("username", id);
         Record record;
         try (Session session = driver.session()) {
-            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee", parameters);
+            StatementResult rs = session
+                            .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) 
+                            WHERE followee.username = $username 
+                            RETURN followee", parameters);
             record = rs.next();
-            profile_image_url = record.get(0).get("url").asString();
+            profileImageUrl = record.get(0).get("url").asString();
         }
-        return profile_image_url;
+        return profileImageUrl;
     }
 
 
     public JsonArray getFollowers(String id) {
         JsonArray followers = new JsonArray();
         JsonObject follower = new JsonObject();
-        String follower_name, profile_image_url;
+        String followerName, profileImageUrl;
         Record record;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        Map<String,Object> parameters = Collections.singletonMap("username", id);
 
         try (Session session = driver.session()) {
-            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower ORDER BY follower.username", parameters);
+            StatementResult rs = session
+                                .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) 
+                                WHERE followee.username = $username 
+                                RETURN follower ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
                 follower = new JsonObject();
 
-                follower_name = record.get(0).get("username").asString();
-                profile_image_url = record.get(0).get("url").asString();
+                followerName = record.get(0).get("username").asString();
+                profileImageUrl = record.get(0).get("url").asString();
 
-                follower.addProperty("profile", profile_image_url);
-                follower.addProperty("name", follower_name);
+                follower.addProperty("profile", profileImageUrl);
+                follower.addProperty("name", followerName);
                 followers.add(follower);
 
             }
@@ -312,21 +315,24 @@ public class TimelineServlet extends HttpServlet {
     public JsonArray getFollowees(String id) {
         JsonArray followees = new JsonArray();
         JsonObject followee = new JsonObject();
-        String followee_name, profile_image_url;
+        String followeeName, profileImageUrl;
         Record record;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        Map<String,Object> parameters = Collections.singletonMap("username", id);
 
         try (Session session = driver.session()) {
-            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE follower.username = $username RETURN followee ORDER BY follower.username", parameters);
+            StatementResult rs = session
+                                    .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) 
+                                    WHERE follower.username = $username 
+                                    RETURN followee ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
                 followee = new JsonObject();
 
-                followee_name = record.get(0).get("username").asString();
-                profile_image_url = record.get(0).get("url").asString();
+                followeeName = record.get(0).get("username").asString();
+                profileImageUrl = record.get(0).get("url").asString();
 
-                followee.addProperty("profile", profile_image_url);
-                followee.addProperty("name", followee_name);
+                followee.addProperty("profile", profileImageUrl);
+                followee.addProperty("name", followeeName);
                 followees.add(followee);
 
             }

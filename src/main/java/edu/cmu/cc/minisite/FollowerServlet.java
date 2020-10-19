@@ -16,7 +16,7 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
-import java.util.*; 
+
 
 /**
  * Task 2:
@@ -116,21 +116,24 @@ public class FollowerServlet extends HttpServlet {
         JsonArray followers = new JsonArray();
         // TODO: To be implemented
         JsonObject follower = new JsonObject();
-        String follower_name, profile_image_url;
+        String followerName, profileImageUrl;
         Record record;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        Map<String,Object> parameters = Collections.singletonMap("username", id);
 
         try (Session session = driver.session()) {
-            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower ORDER BY follower.username", parameters);
+            StatementResult rs = session
+                                    .run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) 
+                                    WHERE followee.username = $username 
+                                    RETURN follower ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
                 follower = new JsonObject();
 
-                follower_name = record.get(0).get("username").asString();
-                profile_image_url = record.get(0).get("url").asString();
+                followerName = record.get(0).get("username").asString();
+                profileImageUrl = record.get(0).get("url").asString();
 
-                follower.addProperty("profile", profile_image_url);
-                follower.addProperty("name", follower_name);
+                follower.addProperty("profile", profileImageUrl);
+                follower.addProperty("name", followerName);
                 followers.add(follower);
 
             }

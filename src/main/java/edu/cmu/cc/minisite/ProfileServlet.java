@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 /**
  * Task 1:
  * This query simulates the login process of a user
@@ -104,8 +103,8 @@ public class ProfileServlet extends HttpServlet {
      *                 uses to return the headers to the client
      * @throws IOException      if an input or output error occurs
      */
-    protected void doGet (final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException{
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException {
         String name = request.getParameter("id");
         String pwd = request.getParameter("pwd");
         JsonObject result = new JsonObject();
@@ -129,7 +128,7 @@ public class ProfileServlet extends HttpServlet {
      * @param pwd   The password supplied via the HttpServletRequest
      * @return A JsonObject with the servlet's response
      */
-    JsonObject validateLoginAndReturnResult(String name, String pwd) throws Exception{
+    JsonObject validateLoginAndReturnResult(String name, String pwd) throws Exception {
         JsonObject result = new JsonObject();
         String query = "SELECT profile_photo_url FROM users WHERE username = ? AND pwd = ?";
 
@@ -139,7 +138,7 @@ public class ProfileServlet extends HttpServlet {
         // You may also look at them for expected behavior.
         // Ensure you match the schema of the JsonObject as per the expected
         // response of the service, and never pass/store unhashed passwords!
-        String profile_image_url = null;
+        String profileImageUrl = null;
 
         if (conn == null) {
             return result;
@@ -152,19 +151,19 @@ public class ProfileServlet extends HttpServlet {
             System.out.println(pst.toString());
             ResultSet rs = pst.executeQuery();
             rs.next();
-            profile_image_url = rs.getString("profile_photo_url");
+            profileImageUrl = rs.getString("profile_photo_url");
         } catch (Exception e) {
             //Do nothing
             e.printStackTrace();
         }
 
-        if(profile_image_url == null) {
+        if (profileImageUrl == null) {
             name = "Unauthorized";
-            profile_image_url = "#";
+            profileImageUrl = "#";
         }
 
         result.addProperty("name", name);
-        result.addProperty("profile", profile_image_url);    
+        result.addProperty("profile", profileImageUrl);    
 
         return result;
     }
