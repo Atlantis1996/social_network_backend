@@ -36,9 +36,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 
-
-
-
+import java.util.Collection;
+import java.util.Map;
+import java.util.ArrayList;
 
 
 
@@ -365,7 +365,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
                 followeeName = record.get(0).get("username").asString();
                 profileImageUrl = record.get(0).get("url").asString();
 
-                followee.addProperty("profile", profile_image_url);
+                followee.addProperty("profile", profileImageUrl);
                 followee.addProperty("name", followeeName);
                 followees.add(followee);
 
