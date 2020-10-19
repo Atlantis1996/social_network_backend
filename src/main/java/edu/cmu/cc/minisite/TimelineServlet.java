@@ -195,7 +195,7 @@ public class TimelineServlet extends HttpServlet {
         JsonArray comments = get30Comments(followers);
 
         result.add("followers", followers);
-        // result.put("comments", comments);
+        result.put("comments", comments);
         result.addProperty("profile", profile_image_url);
         result.addProperty("name", id);
         return result.toString();
@@ -223,13 +223,14 @@ public class TimelineServlet extends HttpServlet {
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
-
+        int i=0;
         try {
             while (cursor.hasNext()) {
                  JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
-                System.out.println(comment.toString());
                  comments.add(comment);
+                 i++;
+                 System.out.println(i);
              }
          } finally {
              cursor.close();
