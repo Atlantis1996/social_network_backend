@@ -195,7 +195,7 @@ public class TimelineServlet extends HttpServlet {
         JsonArray comments = get30Comments(followers);
 
         result.add("followers", followers);
-        result.put("comments", comments);
+        result.add("comments", comments);
         result.addProperty("profile", profile_image_url);
         result.addProperty("name", id);
         return result.toString();
