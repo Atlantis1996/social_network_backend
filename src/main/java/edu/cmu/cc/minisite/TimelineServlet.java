@@ -251,7 +251,7 @@ public class TimelineServlet extends HttpServlet {
     public JsonObject getParentComment(String parentId) {
         JsonObject parentComment = null;
         MongoCursor<Document> parentCursor = collection
-                                    .find(Filters.eq("parent_id", parentId))
+                                    .find(Filters.eq("cid", parentId))
                                     .projection(Projections.fields(Projections.excludeId()))
                                     .iterator();
         try {
