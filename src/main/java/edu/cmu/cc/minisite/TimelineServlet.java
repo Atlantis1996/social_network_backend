@@ -240,8 +240,10 @@ public class TimelineServlet extends HttpServlet {
                     }
                 }
                 comments.add(comment);
-             }
-         } finally {
+             }    
+         } catch (Exception e){
+            e.printStackTrace();
+         }finally {
              cursor.close();
          }
 
