@@ -206,7 +206,7 @@ public class TimelineServlet extends HttpServlet {
         JsonObject parentComment, grandParentComment;
         Bson filter = Filters.eq("uid", "dummy"); //TODO
 
-        String name;            
+        String name, parentId, grandParentId;            
         JsonObject follower;
         for(JsonElement fl : followers) {
             follower = fl.getAsJsonObject();
@@ -228,33 +228,13 @@ public class TimelineServlet extends HttpServlet {
                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
                 String parentId = comment.get("parent_id").getAsString();
-                MongoCursor<Document> parentCursor = collection
-                                            .find(Filters.eq("parent_id", parentId))
-                                            .projection(Projections.fields(Projections.excludeId()))
-                                            .iterator();
-                try {
-                    while (parentCursor.hasNext()) {
-                            parentComment = new JsonParser().parse(parentCursor.next().toJson()).getAsJsonObject();
-                            comment.add("parent", parentComment);
-                        }
-                    try {
-                        String grandParentId = parentComment.get("parent_id").getAsString();
-                        MongoCursor<Document> grandParentCursor = collection
-                                                .find(Filters.eq("parent_id", grandParentId))
-                                                .projection(Projections.fields(Projections.excludeId()))
-                                                .iterator();
-                        while (grandParentCursor.hasNext()) {
-                                grandParentComment = new JsonParser().parse(grandParentCursor.next().toJson()).getAsJsonObject();
-                                System.out.println(grandParentComment.toString());
-                                comment.add("grandParentComment", grandParentComment);
-                            }
-                    } finally {
-                        grandParentCursor.close();
-                    }
-                } finally {
-                    parentCursor.close();
+                parentComment = getParentComment(parentId);
+                comment.add("parent", parentComment);
+                if(parentComment != null) {
+                    grandParentId = parentComment.get("parent_id").getAsString();
+                    grandParentComment = getParentComment(parentComment);
+                    comment.add("grand_parent", grandParentComment);
                 }
-
                 comments.add(comment);
              }
          } finally {
@@ -262,6 +242,22 @@ public class TimelineServlet extends HttpServlet {
          }
 
         return comments;
+    }
+
+    public JsonObject getParentComment(String parentId) {
+        JsonObject parentComment = null;
+        MongoCursor<Document> parentCursor = collection
+                                    .find(Filters.eq("parent_id", parentId))
+                                    .projection(Projections.fields(Projections.excludeId()))
+                                    .iterator();
+        try {
+            while (parentCursor.hasNext()) {
+                    parentComment = new JsonParser().parse(parentCursor.next().toJson()).getAsJsonObject();
+                }
+        } finally {
+            parentCursor.close();
+        }
+        return parentComment;
     }
 
     public String getUrl(String id) {
