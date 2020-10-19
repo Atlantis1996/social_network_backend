@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -26,7 +28,8 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
-import java.util.*; 
+
+import java.util.*;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
@@ -59,24 +62,24 @@ import com.mongodb.client.model.Sorts;
  * This task helps you understand the concept of fan-out and caching.
  * Practice writing complex fan-out queries that span multiple databases.
  * Also practice using caching mechanism to boost your backend!
- *
+ * <p>
  * Task 5 (1):
  * Get the name and profile of the user as you did in Task 1
  * Put them as fields in the result JSON object
- *
+ * <p>
  * Task 5 (2);
  * Get the follower name and profiles as you did in Task 2
  * Put them in the result JSON object as one array
- *
+ * <p>
  * Task 5 (3):
  * From the user's followees, get the 30 most popular comments
  * and put them in the result JSON object as one JSON array.
  * (Remember to find their parent and grandparent)
- *
+ * <p>
  * Task 5 (4):
  * Make sure your implementation can finish a request that is sent
  * before in a short time.
- *
+ * <p>
  * The posts should be sorted:
  * First by ups in descending order.
  * Break tie by the timestamp in descending order.
@@ -86,7 +89,6 @@ public class TimelineWithCacheServlet extends HttpServlet {
     /**
      * You need to use this variable to implement your caching
      * mechanism. Please see {@link Cache#put}, {@link Cache#get}.
-     *
      */
     private static Cache cache = new Cache();
 
@@ -101,10 +103,10 @@ public class TimelineWithCacheServlet extends HttpServlet {
 
     /**
      * The endpoint of the database.
-     *
+     * <p>
      * To avoid hardcoding credentials, use environment variables to include
      * the credentials.
-     *
+     * <p>
      * e.g., before running "mvn clean package exec:java" to start the server
      * run the following commands to set the environment variables.
      * export NEO4J_HOST=...
@@ -120,13 +122,13 @@ public class TimelineWithCacheServlet extends HttpServlet {
      * Neo4J Password.
      */
     private static final String NEO4J_PWD = System.getenv("NEO4J_PWD");
-    
+
     /**
      * The endpoint of the database.
-     *
+     * <p>
      * To avoid hardcoding credentials, use environment variables to include
      * the credentials.
-     *
+     * <p>
      * e.g., before running "mvn clean package exec:java" to start the server
      * run the following commands to set the environment variables.
      * export MONGO_HOST=...
@@ -148,6 +150,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
      * MongoDB connection.
      */
     private static MongoCollection<Document> collection;
+
     /**
      * Your initialization code goes here.
      */
@@ -214,7 +217,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
         // Use the given cache variable to implement your
         // caching mechanism.
         String rs = cache.get(id);
-        if(rs != null) {
+        if (rs != null) {
             return rs;
         }
         JsonArray followers = getFollowers(id);
@@ -226,7 +229,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
         result.add("comments", comments);
         result.addProperty("profile", profile_image_url);
         result.addProperty("name", id);
-        if(followers.size() > 300) {
+        if (followers.size() > 300) {
             cache.put(id, result.toString());
         }
         return result.toString();
@@ -235,12 +238,12 @@ public class TimelineWithCacheServlet extends HttpServlet {
     public JsonArray get30Comments(JsonArray followees) {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
-        Bson filter = Filters.eq("uid", "dummy"); 
-        String name, parentId, grandParentId;            
+        Bson filter = Filters.eq("uid", "dummy");
+        String name, parentId, grandParentId;
         JsonObject followee;
         List<Bson> filterList = new ArrayList<>();
 
-        for(JsonElement fl : followees) {
+        for (JsonElement fl : followees) {
             followee = fl.getAsJsonObject();
             name = followee.get("name").getAsString();
             // filter = Filters.or(filter, Filters.eq("uid", name));
@@ -248,39 +251,39 @@ public class TimelineWithCacheServlet extends HttpServlet {
             filterList.add(filter);
         }
 
-        if(filterList.size()==0) {
+        if (filterList.size() == 0) {
             return comments;
         }
-        
+
         MongoCursor<Document> cursor = collection
-                        .find(Filters.or(filterList))
-                        .sort(Sorts.descending("ups", "timestamp"))
-                        .projection(Projections.fields(Projections.excludeId()))
-                        .limit(30)
-                        .iterator();
+                .find(Filters.or(filterList))
+                .sort(Sorts.descending("ups", "timestamp"))
+                .projection(Projections.fields(Projections.excludeId()))
+                .limit(30)
+                .iterator();
         try {
             while (cursor.hasNext()) {
                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
-              //TODO   
+                //TODO
                 parentId = comment.get("parent_id").getAsString();
                 parentComment = null;
                 parentComment = getParentComment(parentId);
-                if(parentComment != null) {
+                if (parentComment != null) {
                     comment.add("parent", parentComment);
                     grandParentId = parentComment.get("parent_id").getAsString();
                     grandParentComment = null;
                     grandParentComment = getParentComment(grandParentId);
-                    if(grandParentComment != null) {
+                    if (grandParentComment != null) {
                         comment.add("grand_parent", grandParentComment);
                     }
                 }
                 comments.add(comment);
-             }    
-         } catch (Exception e){
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-         }finally {
-             cursor.close();
-         }
+        } finally {
+            cursor.close();
+        }
 
         return comments;
     }
@@ -288,13 +291,13 @@ public class TimelineWithCacheServlet extends HttpServlet {
     public JsonObject getParentComment(String parentId) {
         JsonObject parentComment = null;
         MongoCursor<Document> parentCursor = collection
-                                    .find(Filters.eq("cid", parentId))
-                                    .projection(Projections.fields(Projections.excludeId()))
-                                    .iterator();
+                .find(Filters.eq("cid", parentId))
+                .projection(Projections.fields(Projections.excludeId()))
+                .iterator();
         try {
             while (parentCursor.hasNext()) {
-                    parentComment = new JsonParser().parse(parentCursor.next().toJson()).getAsJsonObject();
-                }
+                parentComment = new JsonParser().parse(parentCursor.next().toJson()).getAsJsonObject();
+            }
         } finally {
             parentCursor.close();
         }
@@ -303,7 +306,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
 
     public String getUrl(String id) {
         String profile_image_url;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        Map<String, Object> parameters = Collections.singletonMap("username", id);
         Record record;
         try (Session session = driver.session()) {
             StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN followee", parameters);
@@ -319,7 +322,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
         JsonObject follower = new JsonObject();
         String follower_name, profile_image_url;
         Record record;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        Map<String, Object> parameters = Collections.singletonMap("username", id);
 
         try (Session session = driver.session()) {
             StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE followee.username = $username RETURN follower ORDER BY follower.username", parameters);
@@ -336,7 +339,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
 
             }
         }
-    
+
         return followers;
     }
 
@@ -345,7 +348,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
         JsonObject followee = new JsonObject();
         String followee_name, profile_image_url;
         Record record;
-        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+        Map<String, Object> parameters = Collections.singletonMap("username", id);
 
         try (Session session = driver.session()) {
             StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE follower.username = $username RETURN followee ORDER BY follower.username", parameters);
@@ -362,7 +365,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
 
             }
         }
-    
+
         return followees;
     }
 }
