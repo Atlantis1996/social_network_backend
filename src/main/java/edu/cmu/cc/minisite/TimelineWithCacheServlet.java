@@ -248,7 +248,9 @@ public class TimelineWithCacheServlet extends HttpServlet {
             filterList.add(filter);
         }
 
-
+        if(filterList.size()==0) {
+            return comments;
+        }
         
         MongoCursor<Document> cursor = collection
                         .find(Filters.or(filterList))
