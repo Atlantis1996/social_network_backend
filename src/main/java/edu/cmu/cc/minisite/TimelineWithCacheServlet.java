@@ -38,7 +38,6 @@ import com.mongodb.client.MongoDatabase;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.ArrayList;
 
 
 
@@ -248,7 +247,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
             filterList.add(filter);
         }
 
-        if (filterList.size()==0) {
+        if (filterList.size() == 0) {
             return comments;
         }
         
