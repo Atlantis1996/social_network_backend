@@ -120,7 +120,7 @@ q4() {
   # B. At most 36% of user requests take more than 1 second.
   # C. More than 63% of user requests take more than 1 second.
   # D. 100% of user requests take more than 1 second. 
-  echo "A"
+  echo "B"
 }
 
 ################################################################################
