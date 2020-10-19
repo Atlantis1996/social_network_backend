@@ -219,7 +219,7 @@ public class TimelineServlet extends HttpServlet {
         
         MongoCursor<Document> cursor = collection
                         .find(filter)
-                        .sort(Sorts.descending("timestamp", "ups"))
+                        .sort(Sorts.descending("ups", "timestamp"))
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
