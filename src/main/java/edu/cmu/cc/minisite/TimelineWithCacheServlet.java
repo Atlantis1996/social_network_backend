@@ -169,7 +169,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
         JsonObject result = new JsonObject();
         // Use the given cache variable to implement your
         // caching mechanism.
-        String rs = cache.get(id)
+        String rs = cache.get(id);
         if(rs != null) {
             return rs;
         }
