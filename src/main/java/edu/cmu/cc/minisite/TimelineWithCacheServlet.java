@@ -238,7 +238,7 @@ public class TimelineWithCacheServlet extends HttpServlet {
         Bson filter = Filters.eq("uid", "dummy"); 
         String name, parentId, grandParentId;            
         JsonObject followee;
-        List<Bson> filterList = new ArrayList<>();
+        ArrayList<Bson> filterList = new ArrayList<>();
 
         for (JsonElement fl : followees) {
             followee = fl.getAsJsonObject();
