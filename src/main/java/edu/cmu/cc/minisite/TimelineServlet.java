@@ -317,7 +317,7 @@ public class TimelineServlet extends HttpServlet {
         Map<String,Object> parameters = Collections.singletonMap( "username", id );
 
         try (Session session = driver.session()) {
-            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE follower.username = $username RETURN follower ORDER BY follower.username", parameters);
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE follower.username = $username RETURN followee ORDER BY follower.username", parameters);
             while (rs.hasNext()) {
                 record = rs.next();
                 followee = new JsonObject();
