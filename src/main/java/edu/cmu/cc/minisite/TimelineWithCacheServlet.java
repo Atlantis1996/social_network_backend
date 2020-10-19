@@ -236,28 +236,28 @@ public class TimelineWithCacheServlet extends HttpServlet {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
         Bson filter = Filters.eq("uid", "dummy"); 
-
         String name, parentId, grandParentId;            
         JsonObject followee;
+        List<Bson> filterList = new ArrayList<>();
+
         for(JsonElement fl : followees) {
             followee = fl.getAsJsonObject();
             name = followee.get("name").getAsString();
-            System.out.println(name);
-            filter = Filters.or(filter, Filters.eq("uid", name));
+            // filter = Filters.or(filter, Filters.eq("uid", name));
+            filter = Filters.eq("uid", name);
+            filterList.add(filter);
         }
 
 
         
         MongoCursor<Document> cursor = collection
-                        .find(filter)
+                        .find(Filters.or(filterList))
                         .sort(Sorts.descending("ups", "timestamp"))
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
-        int i=0;
         try {
             while (cursor.hasNext()) {
-                i++;
                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
                 parentId = comment.get("parent_id").getAsString();
@@ -273,7 +273,6 @@ public class TimelineWithCacheServlet extends HttpServlet {
                     }
                 }
                 comments.add(comment);
-                System.out.println(i);
              }    
          } catch (Exception e){
             e.printStackTrace();
