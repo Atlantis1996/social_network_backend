@@ -191,8 +191,9 @@ public class TimelineServlet extends HttpServlet {
     private String getTimeline(String id) {
         JsonObject result = new JsonObject();
         JsonArray followers = getFollowers(id);
+        JsonArray followees = getFollowees(id);
         String profile_image_url = getUrl(id);
-        JsonArray comments = get30Comments(followers);
+        JsonArray comments = get30Comments(followees);
 
         result.add("followers", followers);
         result.add("comments", comments);
@@ -201,16 +202,16 @@ public class TimelineServlet extends HttpServlet {
         return result.toString();
     }
 
-    public JsonArray get30Comments(JsonArray followers) {
+    public JsonArray get30Comments(JsonArray followees) {
         JsonArray comments = new JsonArray();
         JsonObject parentComment, grandParentComment;
-        Bson filter = Filters.eq("uid", "dummy"); //TODO
+        Bson filter = Filters.eq("uid", "dummy"); 
 
         String name, parentId, grandParentId;            
-        JsonObject follower;
-        for(JsonElement fl : followers) {
-            follower = fl.getAsJsonObject();
-            name = follower.get("name").getAsString();
+        JsonObject followee;
+        for(JsonElement fl : followees) {
+            followee = fl.getAsJsonObject();
+            name = followee.get("name").getAsString();
             System.out.println(name);
             filter = Filters.or(filter, Filters.eq("uid", name));
         }
@@ -306,6 +307,32 @@ public class TimelineServlet extends HttpServlet {
         }
     
         return followers;
+    }
+
+    public JsonArray getFollowees(String id) {
+        JsonArray followees = new JsonArray();
+        JsonObject followee = new JsonObject();
+        String followee_name, profile_image_url;
+        Record record;
+        Map<String,Object> parameters = Collections.singletonMap( "username", id );
+
+        try (Session session = driver.session()) {
+            StatementResult rs = session.run("MATCH (follower:User)-[r:FOLLOWS]->(followee:User) WHERE follower.username = $username RETURN follower ORDER BY follower.username", parameters);
+            while (rs.hasNext()) {
+                record = rs.next();
+                followee = new JsonObject();
+
+                followee_name = record.get(0).get("username").asString();
+                profile_image_url = record.get(0).get("url").asString();
+
+                followee.addProperty("profile", profile_image_url);
+                followee.addProperty("name", followee_name);
+                followees.add(followee);
+
+            }
+        }
+    
+        return followees;
     }
 }
 
