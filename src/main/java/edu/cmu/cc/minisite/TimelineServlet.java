@@ -237,6 +237,20 @@ public class TimelineServlet extends HttpServlet {
                             parentComment = new JsonParser().parse(parentCursor.next().toJson()).getAsJsonObject();
                             comment.add("parent", parentComment);
                         }
+                    String grandParentId = parentComment.get("parent_id").getAsString();
+                    MongoCursor<Document> grandParentCursor = collection
+                                            .find(Filters.eq("parent_id", grandParentId))
+                                            .projection(Projections.fields(Projections.excludeId()))
+                                            .iterator();
+                    try {
+                        while (grandParentCursor.hasNext()) {
+                                JsonObject grandParentComment = new JsonParser().parse(grandParentCursor.next().toJson()).getAsJsonObject();
+                                System.out.println(grandParentComment.toString());
+                                comment.add("grandParentComment", grandParentComment);
+                            }
+                    } finally {
+                        grandParentCursor.close();
+                    }
                 } finally {
                     parentCursor.close();
                 }
