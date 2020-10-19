@@ -236,13 +236,11 @@ public class TimelineServlet extends HttpServlet {
                     while (parentCursor.hasNext()) {
                             JsonObject parentComment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
                             System.out.println(parentComment.toString());
-                            parentComment.add(jsonObject);
                         }
                 } finally {
                     parentCursor.close();
                 }
-                
-                System.out.println()
+
                 comments.add(comment);
              }
          } finally {
