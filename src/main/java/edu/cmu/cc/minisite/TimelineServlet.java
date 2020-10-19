@@ -223,8 +223,10 @@ public class TimelineServlet extends HttpServlet {
                         .projection(Projections.fields(Projections.excludeId()))
                         .limit(30)
                         .iterator();
+        int i=0;
         try {
             while (cursor.hasNext()) {
+                i++;
                 JsonObject comment = new JsonParser().parse(cursor.next().toJson()).getAsJsonObject();
               //TODO   
                 parentId = comment.get("parent_id").getAsString();
@@ -240,6 +242,7 @@ public class TimelineServlet extends HttpServlet {
                     }
                 }
                 comments.add(comment);
+                System.out.println(i);
              }    
          } catch (Exception e){
             e.printStackTrace();
